@@ -59,41 +59,6 @@ public class Startup
           .AddEntityFrameworkStores<AuthDbContext>()
           .AddDefaultTokenProviders();
         //OKTA
-        //services.AddAuthentication(options =>
-        //{
-        //    options.DefaultAuthenticateScheme = OktaDefaults.ApiAuthenticationScheme;
-        //    options.DefaultChallengeScheme = OktaDefaults.ApiAuthenticationScheme;
-        //    options.DefaultSignInScheme = OktaDefaults.ApiAuthenticationScheme;
-        //})
-        //.AddOktaWebApi(OpenIdConnectDefaults.AuthenticationScheme, new OktaWebApiOptions()
-        //{
-        //    OktaDomain = Configuration["Okta:Domain"],
-        //    //AuthorizationServerId = Configuration["Okta:AuthorizationServerId"],
-        //    //Audience = Configuration["Okta:ClientId"],
-            
-        //});
-        //.AddOpenIdConnect(options =>
-        //{
-        //    options.ClientId = Configuration.GetValue<string>("Okta:ClientId");
-        //    options.ClientSecret = Configuration.GetValue<string>("Okta:ClientSecret");
-        //    options.CallbackPath = "/authorization-code/callback";
-        //    options.Authority = Configuration.GetValue<string>("Okta:Issuer");
-        //    options.ResponseType = "code";
-        //    options.SaveTokens = true;
-        //    options.Scope.Add("openid");
-        //    options.Scope.Add("profile");
-        //    options.Scope.Add("email");
-        //    options.RequireHttpsMetadata = false;
-        //    options.TokenValidationParameters.ValidateIssuer = false;
-        //    options.TokenValidationParameters.NameClaimType = "name";
-        //});
-        //.AddOktaMvc(new OktaMvcOptions
-        //{
-        //    OktaDomain = Configuration.GetValue<string>("Okta:Domain"),
-        //    ClientId = Configuration.GetValue<string>("Okta:ClientId"),
-        //    ClientSecret = Configuration.GetValue<string>("Okta:ClientSecret"),
-        //    Scope = new List<string> { "openid", "profile", "email" },
-        //});
     }
     private void AddConfiguration(IServiceCollection services)
     {
