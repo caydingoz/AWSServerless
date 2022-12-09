@@ -6,6 +6,12 @@ using Microsoft.AspNetCore.Identity;
 using Patika.Framework.Shared.Consts;
 using Patika.Framework.Shared.Extensions;
 using Okta.AspNetCore;
+using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2;
+using AWSServerless_MVC.Interfaces.Repositories;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace AWSServerless_MVC;
 
@@ -26,6 +32,18 @@ public class Startup
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
+        //DYNMODB
+        var awsOptions = Configuration.GetAWSOptions();
+        services.AddDefaultAWSOptions(awsOptions);
+        services.AddAWSService<IAmazonDynamoDB>();
+        services.AddScoped<IDynamoDBContext, DynamoDBContext>();
+        //MYSQL
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddDbContext<ApplicationDbContext>((sp, opt) =>
+        {
+            var connectionString = sp.GetService<Configuration>().RDBMSConnectionStrings.Single(m => m.Name.Equals(DbConnectionNames.Main)).FullConnectionString;
+            opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+        }, ServiceLifetime.Scoped);
         //IDENTITY
         services.AddScoped<AuthDbContext>();
         services.AddScoped<IdentityDbContext<ApplicationUser>, AuthDbContext>();
@@ -34,6 +52,13 @@ public class Startup
             var connectionString = sp.GetService<Configuration>().RDBMSConnectionStrings.Single(m => m.Name.Equals(DbConnectionNames.Main)).FullConnectionString;
             opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
         }, ServiceLifetime.Scoped);
+
+
+        services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders =
+                ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+        });
 
         services.AddIdentity<ApplicationUser, IdentityRole>(options =>
         {
@@ -45,17 +70,17 @@ public class Startup
         //OKTA
         services.AddAuthentication(options =>
         {
-            options.DefaultAuthenticateScheme = OktaDefaults.ApiAuthenticationScheme;
-            options.DefaultChallengeScheme = OktaDefaults.ApiAuthenticationScheme;
-            options.DefaultSignInScheme = OktaDefaults.ApiAuthenticationScheme;
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
         })
         .AddOpenIdConnect(options =>
         {
             options.ClientId = Configuration.GetValue<string>("Okta:ClientId");
             options.ClientSecret = Configuration.GetValue<string>("Okta:ClientSecret");
-            options.CallbackPath = "/authorization-code/callback";
             options.Authority = Configuration.GetValue<string>("Okta:Issuer");
-            options.ResponseType = "code";
+            options.CallbackPath = "/authorization-code/callback";
+            options.ResponseType = OpenIdConnectResponseType.Code;
             options.SaveTokens = true;
             options.Scope.Add("openid");
             options.Scope.Add("profile");
@@ -85,6 +110,7 @@ public class Startup
     {
         app.UseDeveloperExceptionPage();
 
+        app.UseForwardedHeaders();
         app.UseHttpsRedirection();
 
         //app.UseStaticFiles();

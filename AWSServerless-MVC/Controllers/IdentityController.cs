@@ -30,14 +30,9 @@ namespace AWSServerless_MVC.Controllers
         [HttpGet("okta")]
         public IActionResult LoginWithOktaAsync()
         {
-            //var properties = new AuthenticationProperties();
-            //properties.Items.Add("sessionToken", sessionToken);
-            //properties.RedirectUri = "/Home/";
-
-            //return Challenge(properties, OktaDefaults.MvcAuthenticationScheme);
-            var callback = "identity/deneme";
+            var callback = "https://localhost:5001/api/identity/deneme";
             var provider = OpenIdConnectDefaults.AuthenticationScheme;
-            var url = $"/identity/authorize/callback?callback={callback}";
+            var url = $"api/identity/authorize/callback?callback={callback}";
 
             if (string.IsNullOrEmpty(callback))
             {
@@ -47,12 +42,12 @@ namespace AWSServerless_MVC.Controllers
             return new ChallengeResult(provider, properties);
         }
 
-        [HttpGet("authorize/callback")]
-        public async Task<IActionResult> RegisterCallbackAsync(string callback)
+        [HttpGet("~/authorization-code/api/identity/authorize/callback")]
+        public async Task<IActionResult> RegisterCallbackAsync(string? remoteError = null, string? callback = null)
         {
             var info = await SignInManager.GetExternalLoginInfoAsync();
             var result = await SignInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
-
+            
             if (result.Succeeded)
                 return Ok("ok");
             else
