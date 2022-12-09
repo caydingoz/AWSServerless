@@ -25,6 +25,7 @@ public class Startup
         //services.AddRazorPages();
         services.AddControllers();
         services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen();
         //IDENTITY
         services.AddScoped<AuthDbContext>();
         services.AddScoped<IdentityDbContext<ApplicationUser>, AuthDbContext>();
@@ -85,19 +86,33 @@ public class Startup
         app.UseDeveloperExceptionPage();
 
         app.UseHttpsRedirection();
+
+        //app.UseStaticFiles();
+
+        app.UseSwagger();
         if (env.IsDevelopment())
         {
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+                options.RoutePrefix = string.Empty;
+            });
         }
         else
         {
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/Prod/swagger/v1/swagger.json", "v1");
+                options.RoutePrefix = string.Empty;
+            });
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             //app.UseHsts();
         }
 
-        //var authctx = app.ApplicationServices.CreateScope().ServiceProvider.GetRequiredService<AuthDbContext>();
-        //authctx.Database.Migrate();
-
-        //app.UseStaticFiles();
+        //var ctx = app.ApplicationServices.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        //ctx.Database.Migrate();
+        var authctx = app.ApplicationServices.CreateScope().ServiceProvider.GetRequiredService<AuthDbContext>();
+        authctx.Database.Migrate();
 
         app.UseRouting();
 

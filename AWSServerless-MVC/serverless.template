@@ -26,9 +26,6 @@
         "Policies": [
           "AWSLambda_FullAccess"
         ],
-        "Environment": {
-          "Variables": {}
-        },
         "Events": {
           "ProxyResource": {
             "Type": "Api",

@@ -13,5 +13,5 @@
     "template"      : "serverless.template",
     "template-parameters" : "",
     "s3-bucket"           : "serverless-mvc",
-    "stack-name"          : "serverless-mvc"
+    "stack-name"          : "serverless-mvc-to-api"
 }
