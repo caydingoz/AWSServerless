@@ -1,5 +1,3 @@
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
 using AWSServerless1.Repositories;
 using Patika.Framework.Shared.Consts;
 using Patika.Framework.Shared.Entities;
@@ -11,6 +9,8 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Okta.AspNetCore;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
 
 namespace AWSServerless1;
 public class Startup
@@ -59,6 +59,27 @@ public class Startup
           .AddEntityFrameworkStores<AuthDbContext>()
           .AddDefaultTokenProviders();
         //OKTA
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = OktaDefaults.ApiAuthenticationScheme;
+            options.DefaultChallengeScheme = OktaDefaults.ApiAuthenticationScheme;
+            options.DefaultSignInScheme = OktaDefaults.ApiAuthenticationScheme;
+        })
+        .AddOpenIdConnect(options =>
+        {
+            options.ClientId = Configuration.GetValue<string>("Okta:ClientId");
+            options.ClientSecret = Configuration.GetValue<string>("Okta:ClientSecret");
+            options.CallbackPath = "/authorization-code/callback";
+            options.Authority = Configuration.GetValue<string>("Okta:Issuer");
+            options.ResponseType = "code";
+            options.SaveTokens = true;
+            options.Scope.Add("openid");
+            options.Scope.Add("profile");
+            options.Scope.Add("email");
+            options.RequireHttpsMetadata = false;
+            options.TokenValidationParameters.ValidateIssuer = false;
+            options.TokenValidationParameters.NameClaimType = "name";
+        });
     }
     private void AddConfiguration(IServiceCollection services)
     {
