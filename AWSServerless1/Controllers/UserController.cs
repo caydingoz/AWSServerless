@@ -14,6 +14,11 @@ namespace AWSServerless1.Controllers
         {
             Repo = repo;
         }
+        [HttpGet("error")]
+        public IActionResult Error()
+        {
+            return BadRequest("Jitterbit Esra");
+        }
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetById(Guid userId)
         {
