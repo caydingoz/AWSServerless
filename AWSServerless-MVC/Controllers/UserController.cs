@@ -14,6 +14,11 @@ namespace AWSServerless_MVC.Controllers
         {
             Repo = repo;
         }
+        [HttpGet("error")]
+        public IActionResult GetError()
+        {
+            return BadRequest("Jitterbit Esra");
+        }
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetById(Guid userId)
         {
