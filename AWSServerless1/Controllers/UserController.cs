@@ -19,6 +19,15 @@ namespace AWSServerless1.Controllers
         {
             return BadRequest("Jitterbit Esra");
         }
+        [Produces("application/json")]
+        [HttpPost("esra")]
+        public IActionResult Esra([FromQuery]bool ReturnError, [FromBody]object json)
+        {
+            if (ReturnError)
+                return BadRequest(json);
+            else
+                return Ok("Jitterbit Esra");
+        }
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetById(Guid userId)
         {
