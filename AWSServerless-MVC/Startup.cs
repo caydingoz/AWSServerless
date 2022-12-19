@@ -79,7 +79,7 @@ public class Startup
             options.ClientId = Configuration.GetValue<string>("Okta:ClientId");
             options.ClientSecret = Configuration.GetValue<string>("Okta:ClientSecret");
             options.Authority = Configuration.GetValue<string>("Okta:Issuer");
-            options.CallbackPath = "/authorization-code/callback";
+            options.CallbackPath = "/callback";
             options.ResponseType = OpenIdConnectResponseType.Code;
             options.SaveTokens = true;
             options.Scope.Add("openid");

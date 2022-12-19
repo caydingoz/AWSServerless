@@ -39,10 +39,11 @@ namespace AWSServerless_MVC.Controllers
                 throw new Exception("Callback is empty");
             }
             var properties = SignInManager.ConfigureExternalAuthenticationProperties(provider, url);
+            
             return new ChallengeResult(provider, properties);
         }
 
-        [HttpGet("~/authorization-code/api/identity/authorize/callback")]
+        [HttpGet("authorize/callback")]
         public async Task<IActionResult> RegisterCallbackAsync(string? remoteError = null, string? callback = null)
         {
             var info = await SignInManager.GetExternalLoginInfoAsync();
@@ -51,7 +52,7 @@ namespace AWSServerless_MVC.Controllers
             if (result.Succeeded)
                 return Ok("ok");
             else
-                return BadRequest("bad");
+                return BadRequest("not registered");
         }
     }
 }
