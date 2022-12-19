@@ -24,7 +24,7 @@ namespace AWSServerless1.Controllers
         public IActionResult EsraBody([FromQuery]bool ReturnError, [FromBody]object json)
         {
             if (ReturnError)
-                return BadRequest("Jitterbit Esra");
+                return BadRequest($"Jitterbit Esra {System.Text.Json.JsonSerializer.Serialize(json)}");
             else
                 return Ok(json);
         }
@@ -33,7 +33,7 @@ namespace AWSServerless1.Controllers
         public IActionResult EsraForm([FromQuery] bool ReturnError, [FromForm] object json)
         {
             if (ReturnError)
-                return BadRequest("Jitterbit Esra");
+                return BadRequest($"Jitterbit Esra {System.Text.Json.JsonSerializer.Serialize(json)}");
             else
                 return Ok(json);
         }
