@@ -24,11 +24,9 @@ public class Startup
 
     public IConfiguration Configuration { get; }
 
-    // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
         AddConfiguration(services);
-        //services.AddRazorPages();
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
@@ -89,13 +87,6 @@ public class Startup
             options.TokenValidationParameters.ValidateIssuer = false;
             options.TokenValidationParameters.NameClaimType = "name";
         });
-        //.AddOktaMvc(new OktaMvcOptions
-        //{
-        //    OktaDomain = Configuration.GetValue<string>("Okta:Domain"),
-        //    ClientId = Configuration.GetValue<string>("Okta:ClientId"),
-        //    ClientSecret = Configuration.GetValue<string>("Okta:ClientSecret"),
-        //    Scope = new List<string> { "openid", "profile", "email" },
-        //});
     }
     private void AddConfiguration(IServiceCollection services)
     {
@@ -105,15 +96,12 @@ public class Startup
         LogWriterExtensions.ApplicationName = config.ApplicationName;
     }
 
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         app.UseDeveloperExceptionPage();
 
         app.UseForwardedHeaders();
         app.UseHttpsRedirection();
-
-        //app.UseStaticFiles();
 
         app.UseSwagger();
         if (env.IsDevelopment())
@@ -131,12 +119,10 @@ public class Startup
                 options.SwaggerEndpoint("/Prod/swagger/v1/swagger.json", "v1");
                 options.RoutePrefix = string.Empty;
             });
-            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-            //app.UseHsts();
         }
 
-        //var ctx = app.ApplicationServices.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        //ctx.Database.Migrate();
+        var ctx = app.ApplicationServices.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        ctx.Database.Migrate();
         var authctx = app.ApplicationServices.CreateScope().ServiceProvider.GetRequiredService<AuthDbContext>();
         authctx.Database.Migrate();
 
@@ -149,7 +135,6 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
-            //endpoints.MapRazorPages();
         });
     }
 }
