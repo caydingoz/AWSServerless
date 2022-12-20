@@ -27,10 +27,10 @@ namespace AWSServerless_MVC.Controllers
 
             var connectionStringBuilder = new MySqlConnectionStringBuilder
             {
-                Server = "test-db.crrusvpzju7v.eu-west-1.rds.amazonaws.com",
+                Server = "cemil-clean-db.crrusvpzju7v.eu-west-1.rds.amazonaws.com",
                 UserID = "admin",
                 Password = "12345678",
-                Database = "TestDB",
+                Database = "Cemil",
                 Port = 3306
             };
 
@@ -39,6 +39,11 @@ namespace AWSServerless_MVC.Controllers
                 conn.Open();
 
             }
+            return Ok();
+        }
+        [HttpGet("Denemee")]
+        public async Task<IActionResult> Denemee()
+        {
             return Ok(await (new HttpClient()).GetStringAsync("https://catfact.ninja/fact"));
         }
         [HttpGet]
