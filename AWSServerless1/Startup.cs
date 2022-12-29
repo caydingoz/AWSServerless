@@ -58,6 +58,18 @@ public class Startup
           .AddRoles<IdentityRole>()
           .AddEntityFrameworkStores<AuthDbContext>()
           .AddDefaultTokenProviders();
+
+        services.AddCors(opts =>
+        {
+            opts.AddDefaultPolicy(policy =>
+            {
+                policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost");
+                policy.WithOrigins("http://localhost/*", "https://localhost/*")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+            });
+        });
         ////OKTA
         //services.AddAuthentication(options =>
         //{
@@ -112,6 +124,7 @@ public class Startup
                 options.RoutePrefix = string.Empty;
             });
         }
+        app.UseCors();
 
         var ctx = app.ApplicationServices.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
         ctx.Database.Migrate();
