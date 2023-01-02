@@ -41,8 +41,7 @@ namespace AWSServerless_MVC.Controllers
         {
             return await IdentityApplicationService.ExternalLoginCallbackAsync(remoteError, callback, role);
         }
-        [HttpPost]
-        [Route("refresh-token")]
+        [HttpPost("refresh-token")]
         public async Task<JwtToken> RefreshTokenAsync(RefreshTokenInput input)
         {
             return await IdentityApplicationService.RefreshTokenAsync(input);

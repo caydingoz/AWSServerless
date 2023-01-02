@@ -46,6 +46,7 @@ public class Startup
 
         //MYSQL
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IUserRefreshTokenRepository, UserRefreshTokenRepository>();
         services.AddDbContext<ApplicationDbContext>((sp, opt) =>
         {
             var connectionString = sp.GetService<Configuration>().RDBMSConnectionStrings.Single(m => m.Name.Equals(DbConnectionNames.Main)).FullConnectionString;
@@ -114,11 +115,13 @@ public class Startup
             options.TokenValidationParameters.ValidateIssuer = false;
             options.TokenValidationParameters.NameClaimType = "name";
         });
-        services.AddScoped<IMigrationStep, AuthDefaultDataMigration>();
 
-        services.AddScoped<IUserRefreshTokenRepository, UserRefreshTokenRepository>(); 
+        //IDENTITY SERVICES
         services.AddScoped<IIdentityApplicationService, IdentityApplicationService>();
         services.AddScoped<ITokenHandlerService, TokenHandlerService>();
+
+        //AUTO MIGRATION
+        services.AddScoped<IMigrationStep, AuthDefaultDataMigration>();
     }
     private void AddConfiguration(IServiceCollection services)
     {

@@ -36,7 +36,7 @@ namespace AWSServerless_MVC.Controllers
         }
 
         [HttpDelete("{userId}")]
-        public async Task<IActionResult> DeletUser(Guid userId)
+        public async Task<IActionResult> DeleteUser(Guid userId)
         {
             var user = await Repo.GetByIdAsync(userId);
             if (user == null) return NotFound();
