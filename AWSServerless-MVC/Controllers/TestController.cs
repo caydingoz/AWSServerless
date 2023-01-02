@@ -12,7 +12,6 @@ namespace AWSServerless_MVC.Controllers
         [HttpGet("db")]
         public async Task<IActionResult> DBTestAsync()
         {
-
             var connectionStringBuilder = new MySqlConnectionStringBuilder
             {
                 Server = "cemil-public.crrusvpzju7v.eu-west-1.rds.amazonaws.com",
@@ -36,7 +35,7 @@ namespace AWSServerless_MVC.Controllers
         }
         [HttpGet("auth")]
         [Authorize(Roles = RoleConsts.USER_ROLE)]
-        public IActionResult AuthenticationTest()
+        public IActionResult AuthorizationTest()
         {
             return Ok("Authorize ok");
         }
