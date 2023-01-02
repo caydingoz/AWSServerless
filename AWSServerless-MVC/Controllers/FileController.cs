@@ -1,5 +1,4 @@
-﻿using AWSServerless_MVC.Interfaces.Repositories;
-using AWSServerless_MVC.Models;
+﻿using AWSServerless_MVC.Models;
 using Microsoft.AspNetCore.Mvc;
 using Patika.Framework.Utilities.Excel.Extensions;
 

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Patika.Framework.Domain.Services;
 
-namespace AWSServerless_MVC.Repositories
+namespace AWSServerless_MVC.DbContexts
 {
     public class ApplicationDbContext : DbContextWithUnitOfWork<ApplicationDbContext>
     {

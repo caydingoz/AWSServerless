@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using AWSServerless_MVC.Consts;
+using AWSServerless_MVC.Dtos;
+using AWSServerless_MVC.Entities;
+using AWSServerless_MVC.Interfaces.Services;
+using AWSServerless_MVC.Models;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Okta.AspNetCore;
-using Patika.Framework.Shared.Entities;
 
 namespace AWSServerless_MVC.Controllers
 {
@@ -11,48 +13,39 @@ namespace AWSServerless_MVC.Controllers
     [ApiController]
     public class IdentityController : ControllerBase
     {
-        UserManager<ApplicationUser> UserManager { get; }
-        IUserStore<ApplicationUser> UserStore { get; }
         SignInManager<ApplicationUser> SignInManager { get; }
+        IIdentityApplicationService IdentityApplicationService { get; }
 
         public IdentityController(IServiceProvider serviceProvider)
         {
-            UserManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
-            UserStore = serviceProvider.GetService<IUserStore<ApplicationUser>>();
-            SignInManager = serviceProvider.GetService<SignInManager<ApplicationUser>>();
-        }
-        [HttpGet("deneme")]
-        public IActionResult Deneme()
-        {
-            return Ok("okk");
+            IdentityApplicationService = serviceProvider.GetService<IIdentityApplicationService>() ?? throw new ArgumentNullException();
+            SignInManager = serviceProvider.GetService<SignInManager<ApplicationUser>>() ?? throw new ArgumentNullException();
         }
 
-        [HttpGet("okta")]
-        public IActionResult LoginWithOktaAsync()
+        [HttpGet("login/okta")]
+        public IActionResult LoginWithOktaAsync([FromQuery]string callback)
         {
-            var callback = "https://localhost:5001/api/identity/deneme";
             var provider = OpenIdConnectDefaults.AuthenticationScheme;
-            var url = $"api/identity/authorize/callback?callback={callback}";
+            var url = $"api/identity/callback?callback={callback}&role={RoleConsts.USER_ROLE}";
 
             if (string.IsNullOrEmpty(callback))
-            {
                 throw new Exception("Callback is empty");
-            }
+            
             var properties = SignInManager.ConfigureExternalAuthenticationProperties(provider, url);
             
             return new ChallengeResult(provider, properties);
         }
 
-        [HttpGet("authorize/callback")]
-        public async Task<IActionResult> RegisterCallbackAsync(string? remoteError = null, string? callback = null)
+        [HttpGet("callback")]
+        public async Task<JwtToken> ExternalLoginCallbackAsync(string? remoteError = null, string? callback = null, string role = "")
         {
-            var info = await SignInManager.GetExternalLoginInfoAsync();
-            var result = await SignInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
-            
-            if (result.Succeeded)
-                return Ok("ok");
-            else
-                return BadRequest("not registered");
+            return await IdentityApplicationService.ExternalLoginCallbackAsync(remoteError, callback, role);
+        }
+        [HttpPost]
+        [Route("refresh-token")]
+        public async Task<JwtToken> RefreshTokenAsync(RefreshTokenInput input)
+        {
+            return await IdentityApplicationService.RefreshTokenAsync(input);
         }
     }
 }
